@@ -1,0 +1,1 @@
+export const PACKAGE_MANAGER_ROOT_PATH = '/apps/packages';
