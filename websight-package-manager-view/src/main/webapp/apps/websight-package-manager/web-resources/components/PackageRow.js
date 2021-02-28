@@ -226,6 +226,7 @@ export default class PackageRow {
                     refreshPage={this.props.refreshPage}
                     toggleConsole={this.props.toggleConsole}
                     updateActionState={this.props.updateActionState}
+                    extraActions={this.props.extraActions}
                 />
             );
         }
@@ -250,7 +251,7 @@ export default class PackageRow {
 
         const content = !row.children && row.logs ? consoleRow(row) : packageRow(row);
         const hasPackageLogs = (row.children && row.children.length > 0)
-            || (['QUEUED', 'RUNNING', 'FINISHED'].includes((row.lastAction || {}).state));
+            || (['RUNNING', 'FINISHED'].includes((row.lastAction || {}).state));
 
         return (
             <Row

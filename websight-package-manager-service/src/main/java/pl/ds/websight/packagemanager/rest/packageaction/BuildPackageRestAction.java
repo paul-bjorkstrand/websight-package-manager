@@ -5,6 +5,7 @@ import org.osgi.service.component.annotations.Reference;
 import pl.ds.websight.packagemanager.dto.PackageActionStateDto;
 import pl.ds.websight.packagemanager.rest.AbstractRestAction;
 import pl.ds.websight.packagemanager.rest.Messages;
+import pl.ds.websight.packagemanager.packageoptions.PackageImportOptions;
 import pl.ds.websight.packagemanager.rest.requestparameters.PackageActionCommand;
 import pl.ds.websight.rest.framework.RestAction;
 import pl.ds.websight.rest.framework.RestActionResult;
@@ -22,7 +23,7 @@ public class BuildPackageRestAction extends AbstractRestAction<PackageActionRest
 
     @Override
     protected RestActionResult<PackageActionStateDto> performAction(PackageActionRestModel model) throws RepositoryException {
-        return processor.process(model.getPath(), model.getSession(), PackageActionCommand.BUILD, false);
+        return processor.process(model.getPath(), PackageImportOptions.DEFAULT, model.getSession(), PackageActionCommand.BUILD);
     }
 
     @Override

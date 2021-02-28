@@ -8,11 +8,13 @@ import org.apache.jackrabbit.vault.packaging.JcrPackageDefinition;
 import org.apache.jackrabbit.vault.packaging.JcrPackageManager;
 import org.apache.jackrabbit.vault.packaging.PackageException;
 import pl.ds.websight.packagemanager.packageaction.PackageActionJobConsumer;
+import pl.ds.websight.packagemanager.packageoptions.PackageImportOptions;
 import pl.ds.websight.packagemanager.util.JcrPackageUtil;
 
 import javax.jcr.RepositoryException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.apache.jackrabbit.vault.packaging.DependencyHandling.REQUIRED;
 
@@ -24,8 +26,8 @@ public enum PackageActionCommand {
             "Install Package:",
             "Installing content",
             "Package installed",
-            (jcrPackage, listener, classLoader, dryRunVal) ->
-                    jcrPackage.install(createImportOptions(listener, classLoader, dryRunVal, jcrPackage))),
+            (jcrPackage, packageImportOptions, listener, classLoader) ->
+                    jcrPackage.install(createImportOptions(listener, classLoader, jcrPackage, packageImportOptions))),
 
     UNINSTALL(
             "Uninstallation",
@@ -33,8 +35,8 @@ public enum PackageActionCommand {
             "Uninstall Package:",
             "Uninstalling content",
             "Package uninstalled",
-            (jcrPackage, listener, classLoader, dryRunVal) ->
-                    jcrPackage.uninstall(createImportOptions(listener, classLoader, dryRunVal, jcrPackage))),
+            (jcrPackage, packageImportOptions, listener, classLoader) ->
+                    jcrPackage.uninstall(createImportOptions(listener, classLoader, jcrPackage, packageImportOptions))),
 
     BUILD(
             "Build",
@@ -50,7 +52,7 @@ public enum PackageActionCommand {
             "Package Coverage Preview:",
             "Dump package coverage",
             "Coverage dumped",
-            (jcrPackage, listener, classLoader, dryRunVal) -> {
+            (jcrPackage, packageImportOptions, listener, classLoader) -> {
                 JcrPackageDefinition definition = jcrPackage.getDefinition();
                 if (definition != null) {
                     definition.dumpCoverage(listener);
@@ -103,10 +105,11 @@ public enum PackageActionCommand {
         return description;
     }
 
-    public void executeCommand(JcrPackage jcrPackage, ProgressTrackerListener listener, ClassLoader classLoader, JcrPackageManager manager,
-            boolean dryRun) throws RepositoryException, PackageException, IOException {
+    public void executeCommand(JcrPackage jcrPackage, PackageImportOptions packageImportOptions, ProgressTrackerListener listener,
+            ClassLoader classLoader, JcrPackageManager manager)
+            throws RepositoryException, PackageException, IOException {
         if (this.managementExecutor == null) {
-            this.packageExecutor.execute(jcrPackage, listener, classLoader, dryRun);
+            this.packageExecutor.execute(jcrPackage, packageImportOptions, listener, classLoader);
         } else {
             this.managementExecutor.execute(jcrPackage, listener, manager);
         }
@@ -128,28 +131,29 @@ public enum PackageActionCommand {
                 .orElse(null);
     }
 
-    private static ImportOptions createImportOptions(ProgressTrackerListener listener, ClassLoader classLoader, boolean dryRun,
-            JcrPackage jcrPackage) {
+    private static ImportOptions createImportOptions(ProgressTrackerListener listener, ClassLoader classLoader, JcrPackage jcrPackage,
+            PackageImportOptions packageImportOptions) throws RepositoryException {
         ImportOptions options = new ImportOptions();
-        AccessControlHandling acHandling = JcrPackageUtil.fetchDefinition(jcrPackage)
-                .map(JcrPackageDefinition::getAccessControlHandling)
-                .orElse(null);
-        options.setAccessControlHandling(acHandling);
+        options.setAccessControlHandling(
+                Optional.ofNullable(packageImportOptions.getAcHandling()).orElse(jcrPackage.getDefinition().getAccessControlHandling()));
         options.setDependencyHandling(REQUIRED);
         options.setAutoSaveThreshold(NODES_MODIFIED_CONCURRENTLY);
-        options.setDryRun(dryRun);
+        options.setDryRun(packageImportOptions.isDryRun());
         options.setListener(listener);
         options.setHookClassLoader(classLoader);
+        options.setNonRecursive(!packageImportOptions.isExtractSubpackages());
         return options;
     }
 
     private interface CmdPackageExecutor {
-        void execute(JcrPackage jcrPackage, ProgressTrackerListener listener, ClassLoader classLoader, boolean dryRun)
+        void execute(JcrPackage jcrPackage, PackageImportOptions packageImportOptions, ProgressTrackerListener listener,
+                ClassLoader classLoader)
                 throws RepositoryException, IOException, PackageException;
     }
 
     private interface CmdManagementExecutor {
-        void execute(JcrPackage jcrPackage, ProgressTrackerListener listener, JcrPackageManager manager)
+        void execute(JcrPackage jcrPackage, ProgressTrackerListener listener,
+                JcrPackageManager manager)
                 throws RepositoryException, IOException, PackageException;
     }
 }

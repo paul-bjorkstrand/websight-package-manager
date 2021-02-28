@@ -45,6 +45,7 @@ public class PackageRestModel implements Validatable {
     private static final String THUMBNAIL_PARAM_NAME = "thumbnail";
     private static final long THUMBNAIL_SIZE_LIMIT_IN_KB = 400;
     private static final long THUMBNAIL_SIZE_LIMIT_IN_BYTES = THUMBNAIL_SIZE_LIMIT_IN_KB * 1024;
+    private static final List<String> SUPPORTED_PACKAGE_EXTENSIONS = asList(".zip", ".jar");
     private static final List<String> ALLOWED_THUMBNAIL_MIME_TYPES =
             asList("image/bmp", "image/gif", "image/jpeg", "image/jpg", "image/png");
     private static final CollectionType LIST_STRING_COLLECTION_TYPE = TypeFactory.defaultInstance()
@@ -220,9 +221,17 @@ public class PackageRestModel implements Validatable {
 
     private void validatePackagePath(Errors errors) {
         ResourceResolver resourceResolver = this.getResourceResolver();
-        String packageOrGroupPath = PACKAGES_ROOT_PATH + (group.isEmpty() ? "" : group + '/') + name;
-        if (resourceResolver.getResource(packageOrGroupPath) != null) {
-            errors.add("name", name, String.format(Messages.PACKAGE_NAME_VALIDATION_ERROR_PATH_ALREADY_EXISTS, packageOrGroupPath));
+        String packagePath = PACKAGES_ROOT_PATH + (group.isEmpty() ? "" : group + '/') + name;
+        String groupPath = PACKAGES_ROOT_PATH + group;
+        if (!group.isEmpty()) {
+            for (String extension : SUPPORTED_PACKAGE_EXTENSIONS) {
+                if (resourceResolver.getResource(groupPath + extension) != null) {
+                    errors.add("group", group, String.format(Messages.PACKAGE_NAME_VALIDATION_ERROR_PATH_ALREADY_EXISTS, groupPath + extension));
+                }
+            }
+        }
+        if (resourceResolver.getResource(packagePath) != null) {
+            errors.add("name", name, String.format(Messages.PACKAGE_NAME_VALIDATION_ERROR_PATH_ALREADY_EXISTS, packagePath));
         }
     }
 

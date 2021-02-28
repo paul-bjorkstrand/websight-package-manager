@@ -17,6 +17,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.ds.websight.packagemanager.packageoptions.PackageImportOptions;
 import pl.ds.websight.packagemanager.rest.requestparameters.PackageActionCommand;
 import pl.ds.websight.packagemanager.util.JcrPackageUtil;
 import pl.ds.websight.packagemanager.util.JobUtil;
@@ -123,14 +124,14 @@ public class PackageActionJobConsumer implements JobConsumer {
             PackageActionLogProgressListener listener, Session applicantSession,
             PackageActionCommand commandToExecute) {
         String packageReference = properties.getPackageReference();
-        boolean isDryRun = properties.isDryRun();
         boolean isActionExecutionSuccessful = false;
+        PackageImportOptions packageImportOptions = properties.getPackageImportOptions();
         JcrPackageManager packageManager = packaging.getPackageManager(applicantSession);
         try (JcrPackage packageToProcess = JcrPackageUtil.open(packageReference, applicantSession, packageManager)) {
-            appendPackageActionHeader(listener, packageReference, isDryRun, jobStart, commandToExecute.getLogPrefix(),
+            appendPackageActionHeader(listener, packageReference, packageImportOptions.isDryRun(), jobStart, commandToExecute.getLogPrefix(),
                     commandToExecute.getDescription());
-            commandToExecute.executeCommand(packageToProcess, listener, classLoaderManager.getDynamicClassLoader(), packageManager,
-                    isDryRun);
+            commandToExecute.executeCommand(packageToProcess, packageImportOptions, listener, classLoaderManager.getDynamicClassLoader(),
+                    packageManager);
             isActionExecutionSuccessful = true;
             LOG.debug("{} of package {} finished successfully", commandToExecute, packageReference);
             return JobResult.OK;

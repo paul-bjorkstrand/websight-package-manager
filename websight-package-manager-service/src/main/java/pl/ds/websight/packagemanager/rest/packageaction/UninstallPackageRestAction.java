@@ -5,6 +5,7 @@ import org.osgi.service.component.annotations.Reference;
 import pl.ds.websight.packagemanager.dto.PackageActionStateDto;
 import pl.ds.websight.packagemanager.rest.AbstractRestAction;
 import pl.ds.websight.packagemanager.rest.Messages;
+import pl.ds.websight.packagemanager.packageoptions.PackageImportOptions;
 import pl.ds.websight.packagemanager.rest.PackagePrerequisiteValidator;
 import pl.ds.websight.packagemanager.rest.requestparameters.PackageActionCommand;
 import pl.ds.websight.packagemanager.util.JcrPackageStatusUtil;
@@ -29,7 +30,8 @@ public class UninstallPackageRestAction extends AbstractRestAction<PackageAction
 
     @Override
     protected RestActionResult<PackageActionStateDto> performAction(PackageActionRestModel model) throws RepositoryException {
-        return processor.process(model.getPath(), model.getSession(), PackageActionCommand.UNINSTALL, false, ACTION_PRE_VALIDATOR);
+        return processor.process(model.getPath(), PackageImportOptions.DEFAULT, model.getSession(), PackageActionCommand.UNINSTALL,
+                ACTION_PRE_VALIDATOR);
     }
 
     @Override

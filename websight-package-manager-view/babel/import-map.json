@@ -8,7 +8,8 @@
     "react-beautiful-dnd": "websight-atlaskit-esm/web-resources/react-beautiful-dnd.js",
     "^websight-admin(.*)":  "websight-admin/web-resources\\1.js",
     "^websight-rest-atlaskit-client(.*)":  "websight-rest-atlaskit-client/web-resources/js\\1.js",
-    "^websight-autosuggestion-esm(.*)": "websight-autosuggestion-esm/web-resources\\1.js"
+    "^websight-autosuggestion-esm(.*)": "websight-autosuggestion-esm/web-resources\\1.js",
+    "websight-fragments-esm": "websight-fragments-esm/web-resources/WebFragments.js"
   },
   "devAliases": {
     "websight-atlaskit-esm": "http://localhost:8080/apps/websight-atlaskit-esm",

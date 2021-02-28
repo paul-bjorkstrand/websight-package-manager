@@ -9,7 +9,9 @@ import PackageService from '../services/PackageService.js';
 import * as PackageUtil from '../utils/PackageUtil.js';
 import { Filters } from './ActivityLog.js';
 import EditPackageModal from './modals/EditPackageModal.js';
+import InstallPackageModal from './modals/InstallPackageModal.js';
 import SchedulePackageActionsModal from './modals/SchedulePackageActionsModal.js';
+import { fetchApplicableActions } from 'websight-admin/utils/ExtraActionsUtil';
 
 const getSuggestedAction = (packageData) => {
     const isBuilt = PackageUtil.isPackageBuilt(packageData);
@@ -26,6 +28,9 @@ export default class PackageActions extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            extraActions: props.extraActions
+        }
         this.buildPackage = this.buildPackage.bind(this);
         this.deletePackage = this.deletePackage.bind(this);
         this.dumpCoverage = this.dumpCoverage.bind(this);
@@ -45,9 +50,11 @@ export default class PackageActions extends React.Component {
         );
     }
 
-    installPackage(path, dryRun = false) {
+    installPackage(path, advancedOptions, dryRun = false) {
         PackageService.installPackage(
             path,
+            advancedOptions.acHandling ? advancedOptions.acHandling.value : '',
+            advancedOptions.extractSubpackages,
             () => {
                 this.installConfirmationModal.close();
                 this.props.updateActionState(path, { state: 'CHECKING', type: 'INSTALL' }, true);
@@ -98,6 +105,7 @@ export default class PackageActions extends React.Component {
 
     render() {
         const { packageData } = this.props;
+        const { extraActions } = this.state;
         const suggestedAction = getSuggestedAction(packageData);
         const isPackageInstalled = PackageUtil.isPackageInstalled(packageData);
         const isPackageBuilt = PackageUtil.isPackageBuilt(packageData);
@@ -119,6 +127,14 @@ export default class PackageActions extends React.Component {
                 <DropdownMenu
                     trigger=''
                     triggerType='button'
+                    appearance='tall'
+                    onOpenChange={(event) => {
+                        if (event.isOpen) {
+                            fetchApplicableActions(this.props.extraActions, packageData.path, (actions) => {
+                                this.setState({ extraActions : actions })
+                            })
+                        }
+                    }}
                 >
                     <DropdownItem
                         href={packageData.path + '?' + packageData.timestamp}
@@ -163,7 +179,18 @@ export default class PackageActions extends React.Component {
                     >
                         Schedule
                     </DropdownItem>
+                    {extraActions && extraActions.map((action, index) => {
+                        return (
+                            <DropdownItem
+                                key={index}
+                                onClick={() => action.onClick()}>{action.label}
+                            </DropdownItem>
+                        )
+                    })}
                 </DropdownMenu>
+                {extraActions && extraActions.map((action) => {
+                    return action.modal(packageData);
+                })}
                 <ConfirmationModal
                     buttonText={'Build'}
                     heading={'Build package'}
@@ -176,17 +203,10 @@ export default class PackageActions extends React.Component {
                     onConfirm={() => this.buildPackage(packageData.path)}
                     ref={(element) => this.buildConfirmationModal = element}
                 />
-                <ConfirmationModal
-                    buttonText={isPackageInstalled ? 'Reinstall' : 'Install'}
-                    heading={isPackageInstalled ? 'Reinstall' : 'Install' + ' package'}
-                    message={(
-                        <>
-                            Do you really want to {isPackageInstalled ? 'reinstall' : 'install'} this
-                            package?<br /><br />
-                            <b>{packageData.downloadName}</b>
-                        </>
-                    )}
-                    onConfirm={() => this.installPackage(packageData.path)}
+                <InstallPackageModal
+                    packageData={packageData}
+                    isPackageInstalled={isPackageInstalled}
+                    onSubmit={this.installPackage}
                     ref={(element) => this.installConfirmationModal = element}
                 />
                 <EditPackageModal

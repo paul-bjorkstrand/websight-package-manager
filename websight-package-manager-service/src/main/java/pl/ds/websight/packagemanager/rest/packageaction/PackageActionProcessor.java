@@ -15,6 +15,7 @@ import pl.ds.websight.packagemanager.dto.CombinedActionsDto;
 import pl.ds.websight.packagemanager.dto.PackageActionStateDto;
 import pl.ds.websight.packagemanager.packageaction.PackageActionJobProperties;
 import pl.ds.websight.packagemanager.rest.Messages;
+import pl.ds.websight.packagemanager.packageoptions.PackageImportOptions;
 import pl.ds.websight.packagemanager.rest.PackagePrerequisiteValidator;
 import pl.ds.websight.packagemanager.rest.requestparameters.PackageActionCommand;
 import pl.ds.websight.packagemanager.util.JcrPackageUtil;
@@ -40,8 +41,8 @@ public class PackageActionProcessor {
     @Reference
     private JobManager jobManager;
 
-    public RestActionResult<PackageActionStateDto> process(String packageToProcessPath, Session session, PackageActionCommand command,
-            boolean dryRun, PackagePrerequisiteValidator... validators) throws RepositoryException {
+    public RestActionResult<PackageActionStateDto> process(String packageToProcessPath, PackageImportOptions packageImportOptions,
+            Session session, PackageActionCommand command, PackagePrerequisiteValidator... validators) throws RepositoryException {
         try (JcrPackage packageToProcess = JcrPackageUtil.open(packageToProcessPath, session, packaging.getPackageManager(session))) {
             Pair<String, String> validationResult =
                     PackagePrerequisiteValidator.getValidationResult(validators, packageToProcess, packageToProcessPath);
@@ -61,7 +62,7 @@ public class PackageActionProcessor {
                                 StringUtils.capitalize(actionBlockerName), packageToProcessPath));
             }
             Job actionJob = jobManager.addJob(command.getJobTopic(),
-                    PackageActionJobProperties.toMap(packageToProcessPath, session.getUserID(), dryRun));
+                    PackageActionJobProperties.toMap(packageToProcessPath, packageImportOptions, session.getUserID()));
             if (actionJob == null) {
                 LOG.warn("Could not queue package action: {} of package: {}", command, packageToProcessPath);
                 return RestActionResult.failure(
@@ -94,7 +95,7 @@ public class PackageActionProcessor {
                             previousDoneActionMsgText, lowerCaseActionTitle),
                     FIRST_ACTION_DONE_FLAG);
         }
-        RestActionResult<?> actionQueuedResult = process(packageToProcessPath, session, command, false, validators);
+        RestActionResult<?> actionQueuedResult = process(packageToProcessPath, PackageImportOptions.DEFAULT, session, command, validators);
         if (RestActionResult.Status.FAILURE == actionQueuedResult.getStatus()) {
             LOG.warn("Previous action on package was successful, but {} queuing failed", lowerCaseActionTitle);
             return RestActionResult.failure(

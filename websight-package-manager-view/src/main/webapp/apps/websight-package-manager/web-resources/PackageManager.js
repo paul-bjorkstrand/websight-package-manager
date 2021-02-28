@@ -12,6 +12,8 @@ import GlobalNavigation from 'websight-admin/GlobalNavigation';
 import { getUrlHashValue, getUrlParamValue, setUrlHashValue, setUrlParamValues } from 'websight-admin/services/SearchParamsService';
 import Footer from 'websight-admin/Footer';
 import { AUTH_CONTEXT_UPDATED } from 'websight-rest-atlaskit-client/RestClient';
+import { getWebFragments } from 'websight-fragments-esm';
+import { errorNotification } from '/apps/websight-rest-atlaskit-client/web-resources/js/Notification.js';
 
 import { PackageLogs, Separator } from './components/ActivityLog.js';
 import ContainerNavigation from './components/ContainerNavigation.js';
@@ -55,7 +57,8 @@ export default class PackageManager extends React.Component {
             selectedPackage: '',
             triggeredPackages: {},
             isPackageStateCheckScheduled: false,
-            isLoadingLogsScheduled: false
+            isLoadingLogsScheduled: false,
+            extraActions: null
         }
         // we can't store it in state, because updating it remounts ContainerNavigation and we loose focus on filter input:
         this.groupNameFilter = '';
@@ -71,6 +74,8 @@ export default class PackageManager extends React.Component {
         this.updateActionState = this.updateActionState.bind(this);
         this.checkPackagesStates = this.checkPackagesStates.bind(this);
         this.loadLogsForRunningPackage = this.loadLogsForRunningPackage.bind(this);
+
+        getWebFragments('websight.admin.packagemanager.extra.actions', (fragments) => this.setState({ extraActions: fragments }), errorNotification);
     }
 
     componentDidMount() {
@@ -640,6 +645,7 @@ export default class PackageManager extends React.Component {
                             updateActionState={this.updateActionState}
                             isLoading={this.state.isLoadingPackages}
                             isInitialized={this.state.loadedParams !== null}
+                            extraActions={this.state.extraActions}
                         />
                         {showPagination && (
                             <PaginationContainer>

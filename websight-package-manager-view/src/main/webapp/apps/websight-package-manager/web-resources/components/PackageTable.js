@@ -63,7 +63,8 @@ export default class PackageTable extends React.Component {
                                     openConsoleForNewPackage: this.props.openConsoleForNewPackage,
                                     refreshPage: this.props.refreshPage,
                                     selectPackage: this.props.selectPackage,
-                                    updateActionState: this.props.updateActionState
+                                    updateActionState: this.props.updateActionState,
+                                    extraActions: this.props.extraActions
                                 }).render());
                             }}
                         />

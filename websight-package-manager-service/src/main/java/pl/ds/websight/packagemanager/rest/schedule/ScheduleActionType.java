@@ -4,6 +4,7 @@ import pl.ds.websight.packagemanager.DeletePackageScheduleJobConsumer;
 import pl.ds.websight.packagemanager.JobProperties;
 import pl.ds.websight.packagemanager.packageaction.PackageActionJobConsumer;
 import pl.ds.websight.packagemanager.packageaction.PackageActionJobProperties;
+import pl.ds.websight.packagemanager.packageoptions.PackageImportOptions;
 import pl.ds.websight.packagemanager.rest.PackagePrerequisiteValidator;
 import pl.ds.websight.packagemanager.rest.packageaction.InstallPackageRestAction;
 import pl.ds.websight.packagemanager.rest.packageaction.UninstallPackageRestAction;
@@ -16,18 +17,18 @@ public enum ScheduleActionType {
     INSTALL(
             "Installation",
             PackageActionJobConsumer.INSTALL_TOPIC,
-            (packagePath, userId) -> PackageActionJobProperties.toMap(packagePath, userId, false),
+            (packagePath, userId) -> PackageActionJobProperties.toMap(packagePath, PackageImportOptions.DEFAULT, userId),
             InstallPackageRestAction.ACTION_PRE_VALIDATORS),
 
     BUILD(
             "Build",
             PackageActionJobConsumer.BUILD_TOPIC,
-            (packagePath, userId) -> PackageActionJobProperties.toMap(packagePath, userId, false)),
+            (packagePath, userId) -> PackageActionJobProperties.toMap(packagePath,  PackageImportOptions.DEFAULT, userId)),
 
     UNINSTALL(
             "Uninstallation",
             PackageActionJobConsumer.UNINSTALL_TOPIC,
-            (packagePath, userId) -> PackageActionJobProperties.toMap(packagePath, userId, false),
+            (packagePath, userId) -> PackageActionJobProperties.toMap(packagePath,  PackageImportOptions.DEFAULT, userId),
             UninstallPackageRestAction.ACTION_PRE_VALIDATOR),
 
     DELETE(

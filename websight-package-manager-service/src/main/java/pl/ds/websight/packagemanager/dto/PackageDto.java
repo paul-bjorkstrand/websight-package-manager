@@ -76,9 +76,12 @@ public class PackageDto {
         if (acHandling == null) {
             return null;
         }
-        String formattedAcHandling = StringUtils.replace(acHandling.toString(), "_", " ");
-        formattedAcHandling = formattedAcHandling.toLowerCase(JcrPackageUtil.DEFAULT_LOCALE);
-        formattedAcHandling = StringUtils.capitalize(formattedAcHandling);
+        String acHandlingString = StringUtils.lowerCase(acHandling.toString());
+        String[] parts = acHandlingString.split("_");
+        String formattedAcHandling = StringUtils.capitalize(parts[0]);
+        if (parts.length > 1) {
+            formattedAcHandling += StringUtils.capitalize(parts[1]);
+        }
         return formattedAcHandling;
     }
 

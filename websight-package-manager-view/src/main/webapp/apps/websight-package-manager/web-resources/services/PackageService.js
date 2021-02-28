@@ -167,10 +167,10 @@ class PackageService {
         });
     }
 
-    installPackage(path, onSuccess, onComplete, dryRun) {
+    installPackage(path, acHandling, extractSubpackages, onSuccess, onComplete, dryRun) {
         this.client.post({
             action: 'install-package',
-            data: { path: path, dryRun: dryRun },
+            data: { path: path, acHandling: acHandling, extractSubpackages: extractSubpackages, dryRun: dryRun },
             onSuccess: onSuccess,
             onValidationFailure: onComplete,
             onFailure: onComplete,

@@ -35,8 +35,8 @@ public class InstallPackageRestAction extends AbstractRestAction<PackageActionRe
 
     @Override
     protected RestActionResult<PackageActionStateDto> performAction(PackageActionRestModel model) throws RepositoryException {
-        return processor.process(model.getPath(), model.getSession(), PackageActionCommand.INSTALL, model.isDryRun(),
-                ACTION_PRE_VALIDATORS);
+        return processor.process(model.getPath(), model.getPackageImportOptions(), model.getSession(),
+                PackageActionCommand.INSTALL, ACTION_PRE_VALIDATORS);
     }
 
     @Override

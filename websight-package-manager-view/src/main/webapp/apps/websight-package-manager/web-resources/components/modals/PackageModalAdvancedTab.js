@@ -4,6 +4,7 @@ import { Fieldset } from '@atlaskit/form';
 import Select from '@atlaskit/select';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
+import { acHandlingSelectOptions } from '../../utils/PackageManagerConstants.js'
 
 import { getOptionByValue, reorderCollection } from '../../utils/CommonUtils.js';
 import { AddButton } from '../AddButton.js';
@@ -13,15 +14,6 @@ const AdvancedTabContainer = styled.div`
     margin: 10px 0 20px;
     width: 100%;
 `;
-
-const acHandlingSelectOptions = [
-    { label: '-', value: '-' },
-    { label: 'Ignore', value: 'Ignore' },
-    { label: 'Overwrite', value: 'Overwrite' },
-    { label: 'Merge', value: 'Merge' },
-    { label: 'MergePreserve', value: 'MergePreserve' },
-    { label: 'Clear', value: 'Clear' }
-]
 
 export default class PackageModalAdvancedTab {
 
