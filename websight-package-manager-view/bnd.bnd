@@ -1,0 +1,3 @@
+Bundle-Name: WebSight Package Manager View
+Bundle-License: GNU AGPLv3
+Sling-Bundle-Resources: /apps/websight-package-manager;propsJSON:=json

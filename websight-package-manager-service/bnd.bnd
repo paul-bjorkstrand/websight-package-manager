@@ -1,0 +1,5 @@
+Bundle-Name: WebSight Package Manager Service
+Bundle-License: GNU AGPLv3
+Sling-Model-Packages: pl.ds.websight.packagemanager.rest
+Sling-Bundle-Resources: /apps/websight-package-manager-service/docs
+WebSight-Swagger-Index: /apps/websight-package-manager-service/docs/api.html
