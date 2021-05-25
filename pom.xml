@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>pl.ds.websight</groupId>
   <artifactId>websight-package-manager-reactor</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
   <packaging>pom</packaging>
   <name>WebSight Package Manager Reactor</name>
   <description>The reactor pom to build all WebSight Package Manager modules</description>
@@ -35,7 +35,7 @@
     <connection>scm:git:ssh://github.com:DS-WebSight/websight-package-manager.git</connection>
     <developerConnection>scm:git:ssh://github.com:DS-WebSight/websight-package-manager.git</developerConnection>
     <url>https://github.com/DS-WebSight/websight-package-manager</url>
-    <tag>1.0.3</tag>
+    <tag>1.0.4</tag>
   </scm>
   <build>
     <plugins>

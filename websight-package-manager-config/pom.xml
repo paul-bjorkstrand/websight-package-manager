@@ -8,7 +8,7 @@
     <relativePath />
   </parent>
   <artifactId>websight-package-manager-config</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
   <packaging>content-package</packaging>
   <name>WebSight Package Manager Config</name>
   <description>Package Manager module provides OSGi configuration for functionality.</description>
@@ -35,7 +35,7 @@
     <connection>scm:git:ssh://github.com:DS-WebSight/websight-package-manager.git</connection>
     <developerConnection>scm:git:ssh://github.com:DS-WebSight/websight-package-manager.git</developerConnection>
     <url>https://github.com/DS-WebSight/websight-package-manager</url>
-    <tag>1.0.3</tag>
+    <tag>1.0.4</tag>
   </scm>
   <build>
     <plugins>
