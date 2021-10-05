@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class PackageImportOptions implements Serializable {
 
+    public static final PackageImportOptions DEFAULT = new PackageImportOptions();
     private AccessControlHandling acHandling;
     private boolean extractSubpackages;
     private boolean dryRun;
@@ -14,8 +15,6 @@ public class PackageImportOptions implements Serializable {
         this.extractSubpackages = true;
         this.dryRun = false;
     }
-
-    public static final PackageImportOptions DEFAULT = new PackageImportOptions();
 
     public boolean isDryRun() {
         return dryRun;
@@ -39,5 +38,14 @@ public class PackageImportOptions implements Serializable {
 
     public void setExtractSubpackages(boolean extractSubpackages) {
         this.extractSubpackages = extractSubpackages;
+    }
+
+    @Override
+    public String toString() {
+        return "PackageImportOptions{" +
+                "acHandling=" + acHandling +
+                ", extractSubpackages=" + extractSubpackages +
+                ", dryRun=" + dryRun +
+                '}';
     }
 }
